@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radial Bar Chart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #cccccc00;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="radialBarChart" width="400" height="400"></canvas>
+
+    <script>
+        // Data for the chart (you can modify this)
+        const data = [100, 80, 60, 40, 30];
+        // const data = [180];
+
+        const colors = ['#ff5733', '#ffd133', '#33ff57', '#337eff', '#d133ff', '#ff5733'];
+        const labels = ['Label 1', 'Label 2', 'Label 3', 'Label 4', 'Label 5', 'Label 5'];
+
+        const canvas = document.getElementById('radialBarChart');
+        const ctx = canvas.getContext('2d');
+
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        let radius = Math.min(centerX, centerY) * 0.8;
+        const barWidth = Math.abs(25 - data.length*1.5);
+
+        let startAngle = -Math.PI / 2;
+        // let startAngle = 0;
+
+
+        data.forEach((value, index) => {
+            // const angle = (value / data.reduce((a, b) => a + b, 0)) * 2 * Math.PI;
+
+            const angle = (value / data.reduce((a, b) => Math.max(a,b), 0)) * 1.5 * Math.PI;
+
+            const endAngle = startAngle + angle;
+
+            // Draw radial bar
+            ctx.beginPath();
+            ctx.arc(centerX, centerY - radius + (barWidth / 2), barWidth / 2, 0, Math.PI * 2);
+
+            ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+
+            let endArcX = centerX + Math.cos(endAngle) * (radius - (barWidth / 2))
+
+            let endArcY = centerY + Math.sin(endAngle) * (radius - (barWidth / 2))
+
+            ctx.arc(endArcX, endArcY, barWidth / 2, 0, Math.PI * 2);
+
+            ctx.arc(centerX, centerY, radius - barWidth, endAngle, startAngle, true);
+            ctx.closePath();
+            ctx.fillStyle = colors[index];
+            ctx.fill();
+
+            // Draw labels
+            // const midAngle = startAngle + (angle / 2);
+            // const textX = centerX + Math.cos(midAngle) * (radius / 2);
+            // const textY = centerY + Math.sin(midAngle) * (radius / 2);
+            const textX = centerX - 60;
+            const textY = centerY - radius + (barWidth / 2) + 5;
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 12px Arial';
+            ctx.fillText(labels[index], textX, textY);
+
+            radius = radius - barWidth*1.75
+
+
+        });
+
+    </script>
+</body>
+
+</html>
